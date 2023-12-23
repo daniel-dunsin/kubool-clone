@@ -16,12 +16,15 @@ export class UserModel extends BaseModel<User> {
 export default function init(sequelize: Sequelize): typeof UserModel {
   UserModel.init(
     {
+      id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
       email: { type: DataTypes.STRING, validate: { isEmail: true }, unique: true, allowNull: true },
       username: { type: DataTypes.STRING, unique: true, allowNull: false },
       password: {
         type: DataTypes.STRING,
-        set(value: string) {
-          return bcrypt.genSalt(10).then(async (salt) => await bcrypt.hash(value, salt));
+        async set(value: string) {
+          const salt = bcrypt.genSaltSync(10);
+          const hash = bcrypt.hashSync(value, salt);
+          this.setDataValue("password", hash);
         },
       },
     },

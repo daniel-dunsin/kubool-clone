@@ -26,6 +26,8 @@ readdir(__dirname, (error, files) => {
     Object.values(db).forEach((model) => {
       model.associate && model.associate(db);
     });
+
+    sequelize.sync({ force: true });
   });
 });
 
