@@ -14,3 +14,9 @@ export const signInInput = object({
     password: string().required("password is required").min(8, "Password should not be less than 8 characters"),
   }),
 });
+
+export const googleAuthInput = object({
+  body: object({
+    accessToken: string().required("accessToken is required"),
+  }),
+});

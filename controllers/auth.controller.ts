@@ -1,5 +1,5 @@
 import expressAsyncHandler from "express-async-handler";
-import { signIn, signUp } from "../services/auth.service";
+import { googleSignIn, signIn, signUp } from "../services/auth.service";
 import { Request } from "express";
 import { SignInDTO, SignUpDTO, UpdateEmailDTO } from "../schema/dto/auth.dto";
 
@@ -14,3 +14,11 @@ export const signInController = expressAsyncHandler((req: Request<{}, {}, SignIn
     .then((data) => res.status(200).json(data))
     .catch((error) => next(error));
 });
+
+export const googleSignInController = expressAsyncHandler(
+  (req: Request<{}, {}, { accessToken: string }>, res, next) => {
+    googleSignIn(req.body.accessToken)
+      .then((data) => res.status(200).json(data))
+      .catch((error) => next(error));
+  }
+);
