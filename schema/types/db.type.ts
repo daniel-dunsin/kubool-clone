@@ -1,5 +1,5 @@
-import { Model, ModelAttributes, CreationAttributes } from "sequelize";
+import { Model, ModelAttributes, CreationAttributes, ModelStatic } from "sequelize";
 
 export type DBType = {
-  [key: string]: Model<ModelAttributes, CreationAttributes<any>> & { associate(db: DBType): void };
+  [key: string]: ModelStatic<Model<any, any>> & { associate(db: DBType): void };
 };

@@ -16,9 +16,9 @@ export class UserModel extends BaseModel<User> {
 export default function init(sequelize: Sequelize): typeof UserModel {
   UserModel.init(
     {
-      id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
+      id: { type: DataTypes.INTEGER, autoIncrement: true },
       email: { type: DataTypes.STRING, validate: { isEmail: true }, unique: true, allowNull: true },
-      username: { type: DataTypes.STRING, unique: true, allowNull: false },
+      username: { type: DataTypes.STRING, unique: true, allowNull: false, primaryKey: true },
       password: {
         type: DataTypes.STRING,
         async set(value: string) {

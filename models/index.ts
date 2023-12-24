@@ -27,7 +27,7 @@ readdir(__dirname, (error, files) => {
       model.associate && model.associate(db);
     });
 
-    sequelize.sync({ force: true });
+    sequelize.sync();
   });
 });
 

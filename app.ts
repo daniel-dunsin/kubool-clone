@@ -19,7 +19,7 @@ const port = secrets.port ?? 3001;
 app.listen(port, () => {
   console.log(`[⚡server]: server is listening on http://localhost:${port}`);
   sequelize
-    .sync({ force: true })
+    .sync()
     .then(() => {
       console.log(`[⚡database]: database connected`);
     })

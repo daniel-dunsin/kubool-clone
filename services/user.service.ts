@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { UserModel } from "../models/user.model";
 import { UpdateEmailDTO, UpdateUsernameDTO } from "../schema/dto/auth.dto";
 import { ServiceException } from "../schema/error/custom.error";
@@ -15,5 +16,12 @@ export async function updateUsername(data: UpdateUsernameDTO) {
     if (user) throw new ServiceException(400, "a user with this username exists");
     await UserModel.update({ username: data.username }, { where: { id: data.userId } });
     return { message: "username updated" };
+  });
+}
+
+export async function getUserProfile(userId: number) {
+  return UserModel.findOne({ where: { id: userId } }).then((user) => {
+    if (!user) throw new ServiceException(404, "User does not exist");
+    return _.omit(user.dataValues, "password");
   });
 }
