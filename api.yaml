@@ -1,0 +1,413 @@
+openapi: 3.0.0
+servers:
+  - url: https://kubool-clone.onrender.com
+    description: prod url
+info:
+  title: Kubool-Clone
+  description: API for the anonymous website gdpd.xyz
+  version: 1.0.0
+paths:
+  /api/v1/auth/register:
+    post:
+      security: []
+      tags:
+        - auth
+      description: User Registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: "Success Response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        400:
+          description: "Error Response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/auth/login:
+    post:
+      security: []
+      tags:
+        - auth
+      description: User Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: ""
+                email:
+                  type: string
+                  example: ""
+                password:
+                  type: string
+      responses:
+        200:
+          description: "Success Response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        400:
+          description: "Error Response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/auth/google:
+    post:
+      security: []
+      tags:
+        - auth
+      description: Google Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+      responses:
+        200:
+          description: "Success Response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        400:
+          description: "Error Response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/auth/password/forgot:
+    post:
+      security: []
+      tags:
+        - auth
+      description: Forgot Password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        200:
+          description: "Success Response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        400:
+          description: "Error Response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/auth/password/reset:
+    patch:
+      security: []
+      tags:
+        - auth
+      description: User Registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: "Success Response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        400:
+          description: "Error Response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/user:
+    get:
+      tags:
+        - user
+      security:
+        - bearer: []
+      responses:
+        200:
+          description: "Success Response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          400:
+            description: "Error Response"
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/user/email:
+    put:
+      tags:
+        - user
+      description: Update Email
+      security:
+        - bearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        200:
+          description: "Success Response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          400:
+            description: "Error Response"
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/user/username:
+    put:
+      tags:
+        - user
+      description: Update Username
+      security:
+        - bearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        200:
+          description: "Success Response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          400:
+            description: "Error Response"
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/message:
+    get:
+      tags:
+        - messages
+      security:
+        - bearer: []
+      description: get unarchived messages (pagination for infinite scroll)
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+      responses:
+        200:
+          description: "Success Response"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  currentPage:
+                    type: number
+                  limit:
+                    type: number
+                  total:
+                    type: number
+                  totalPages:
+                    type: number
+                  data:
+                    $ref: "#/components/schemas/Message"
+  /api/v1/message/archive:
+    get:
+      tags:
+        - messages
+      security:
+        - bearer: []
+      description: get archived messages (pagination for infinite scroll)
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+      responses:
+        200:
+          description: "Success Response"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  currentPage:
+                    type: number
+                  limit:
+                    type: number
+                  total:
+                    type: number
+                  totalPages:
+                    type: number
+                  data:
+                    $ref: "#/components/schemas/Message"
+  /api/v1/message/{username}:
+    post:
+      tags:
+        - messages
+      security: []
+      description: send anonymous message
+      parameters:
+        - in: path
+          name: username
+          required: true
+          description: "receiver username"
+          schema:
+            type: string
+      responses:
+        200:
+          description: "Success Response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+  /api/v1/message/archive/{id}:
+    put:
+      tags:
+        - messages
+      security:
+        - bearer: []
+      description: archive message
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: "message id"
+          schema:
+            type: string
+      responses:
+        200:
+          description: "Success Response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+
+components:
+  schemas:
+    # defaults
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+    # Responses
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        token:
+          type: string
+
+    # models
+    User:
+      type: object
+      properties:
+        id:
+          type: number
+        email:
+          type: string
+        username:
+          type: string
+
+    Message:
+      type: object
+      properties:
+        message:
+          type: string
+        archived:
+          type: boolean
+        username:
+          type: string
+        User:
+          $ref: "#/components/schemas/User"
+
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+tags:
+  - name: auth
+  - name: user
+  - name: messages

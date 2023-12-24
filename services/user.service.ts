@@ -16,11 +16,11 @@ export async function updateUsername(data: UpdateUsernameDTO) {
   return UserModel.findOne({ where: { username: data.username } }).then(async (unknownUser) => {
     await UserModel.findOne({ where: { id: data.userId } }).then(async (user) => {
       if (!user) throw new ServiceException(404, "user does not exist");
-      if (unknownUser?.id != user?.id) throw new ServiceException(400, "a user with this username exists");
+      if (unknownUser && unknownUser?.id != user?.id)
+        throw new ServiceException(400, "a user with this username exists");
 
       user.username = data.username as string;
       await user.save();
-      await MessageModel.update({ username: data.username }, { where: { username: user.username } });
     });
     return { message: "username updated" };
   });
