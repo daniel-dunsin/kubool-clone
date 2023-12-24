@@ -18,3 +18,13 @@ export interface UpdateUsernameDTO {
   userId: number;
   username?: string;
 }
+
+export interface ForgotPasswordMailDTO {
+  username: string;
+  link: string;
+}
+
+export interface ResetPasswordDTO {
+  token: string;
+  password: string;
+}

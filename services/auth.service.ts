@@ -1,13 +1,17 @@
 import { Op } from "sequelize";
 import JWTHelper from "../helpers/jwt.helper";
 import { UserModel } from "../models/user.model";
-import { SignInDTO, SignUpDTO, UpdateEmailDTO } from "../schema/dto/auth.dto";
+import { ForgotPasswordMailDTO, ResetPasswordDTO, SignInDTO, SignUpDTO, UpdateEmailDTO } from "../schema/dto/auth.dto";
 import { ServiceException } from "../schema/error/custom.error";
 import { User } from "../schema/interfaces/user.interface";
 import _ from "lodash";
 import { google } from "googleapis";
 import secrets from "../constants/secrets.const";
 import slugify from "../helpers/slugify.helper";
+import crypto from "crypto";
+import { TokenModel } from "../models/token.model";
+import { TokenType } from "../schema/enums/token.enum";
+import { sendMail } from "./email.service";
 
 async function auth(user: Omit<User, "password">) {
   const token = await JWTHelper.sign(user);
@@ -59,5 +63,49 @@ export async function googleSignIn(accessToken: string) {
       }
       return user;
     });
+  });
+}
+
+export async function forgotPassword(email: string) {
+  return await UserModel.findOne({ where: { email } }).then(async (user) => {
+    if (user) {
+      const token = crypto.randomBytes(30).toString("hex");
+
+      return await TokenModel.findOrCreate({
+        where: { type: TokenType.PASSWORD_RESET_TOKEN, username: user.username },
+        defaults: {
+          value: token,
+          type: TokenType.PASSWORD_RESET_TOKEN,
+          username: user.username,
+        },
+      }).then(async ([newToken, isCreated]) => {
+        if (!isCreated) {
+          newToken.value = token;
+          await newToken.save();
+        }
+
+        const mailData = {
+          username: user.username,
+          link: `${secrets.frontendUrl}/auth/password/reset/${token}`,
+        };
+
+        return await sendMail<ForgotPasswordMailDTO>({
+          to: user.email,
+          subject: "",
+          data: mailData,
+          template: "forgot-password.ejs",
+        });
+      });
+    }
+  });
+}
+
+export async function resetPassword(data: ResetPasswordDTO) {
+  return await TokenModel.findOne({ where: { value: data.token } }).then(async (token) => {
+    if (!token) throw new ServiceException(404, "Token is invalid or has expired");
+
+    const username = token.username;
+    await UserModel.update({ password: data.password }, { where: { username } });
+    await token.destroy();
   });
 }
